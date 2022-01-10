@@ -1,6 +1,8 @@
 <template>
   <div>
     <Logos />
-    <InputEntry />
+    <ProductList />
   </div>
 </template>
+<script>
+</script>

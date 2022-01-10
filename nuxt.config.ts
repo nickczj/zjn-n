@@ -6,6 +6,9 @@ export default defineNuxtConfig({
     '@vueuse/core/nuxt',
     '@nuxt/bridge-edge',
   ],
+  modules: [
+    'nuxt-socket-io',
+  ],
   css: [
     '@unocss/reset/tailwind.css',
     '~/styles/main.css',
@@ -24,5 +27,18 @@ export default defineNuxtConfig({
     icons: {
       scale: 1.2,
     },
+  },
+  io: {
+    // module options
+    sockets: [{
+      name: 'event-emitter',
+      url: 'http://localhost:8080',
+    }],
+  },
+  publicRuntimeConfig: {
+    WS_URL: process.env.WS_URL,
+  },
+  privateRuntimeConfig: {
+    API_SECRET: process.env.API_SECRET,
   },
 })
