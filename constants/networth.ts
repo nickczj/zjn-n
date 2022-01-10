@@ -25,6 +25,7 @@ export interface Product {
   type: ProductType
   category: string
   quantity: number
+  price: number
   total: number
   imgsrc: string
 }
