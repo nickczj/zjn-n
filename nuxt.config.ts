@@ -5,6 +5,7 @@ export default defineNuxtConfig({
     '@unocss/nuxt',
     '@vueuse/core/nuxt',
     '@nuxt/bridge-edge',
+    '@pinia/nuxt',
   ],
   modules: [
     'nuxt-socket-io',
@@ -16,7 +17,7 @@ export default defineNuxtConfig({
   target: 'static',
   components: true,
   bridge: {
-    vite: true,
+    // vite: true, // doesn't work with pinia currently: https://github.com/vuejs/pinia/issues/917#issuecomment-999390686
   },
   unocss: {
     shortcuts: [

@@ -24,7 +24,9 @@
     }
   },
   "dependencies": {
+    "@pinia/nuxt": "^0.1.8",
     "nuxt-socket-io": "^2.0.0",
+    "pinia": "^2.0.9",
     "socket.io-client": "^4.4.1"
   }
 }
