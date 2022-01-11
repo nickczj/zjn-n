@@ -57,15 +57,12 @@ export default {
       state.products = productsConfigObj
     })
 
-    // const productsRef = reactive(productsConfigObj)
-    // const products = readonly(productsRef)
-
+    const netWorth = computed(() => productStore.netWorth)
     const formatCurrency = computed(() => {
       return (value: number | bigint) => {
         return new Intl.NumberFormat('eb-SG', { style: 'currency', currency: 'SGD' }).format(value)
       }
     })
-
     const format2Dp = computed(() => {
       return (value: number | undefined) => {
         if (value) return value.toFixed(2)
@@ -97,7 +94,7 @@ export default {
 
     return {
       products: productStore.products,
-      netWorth: productStore.netWorth,
+      netWorth,
       formatCurrency,
       format2Dp
     }
