@@ -1,0 +1,6 @@
+      // this.netWorth = this.products.map((p: { type: ProductType; total: number }) => {
+      //   if (p.type === ProductType.Liability)
+      //     return -p.total
+      //   else
+      //     return p.total
+      // }).reduce((a: number, b: number) => a + b, 0)

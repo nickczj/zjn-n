@@ -17,7 +17,7 @@
           <div href="#" class="grid grid-cols-6 gap-4 block p2 max-w-lg bg-white border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
             <div class="col-start-1 col-end-3">
               <div class="flex items-center space-x-4">
-                <img class="w-8 h-8 rounded-full" :src="product.imgsrc">
+                <img class="w-8 h-8 rounded-full" :src="product.imgsrc" alt="">
                 <p class="text-base font-bold tracking-tight text-gray-900 dark:text-white">
                   {{ product.name }}
                 </p>
@@ -50,11 +50,14 @@ export default {
   setup() {
     const productStore = useProductStore()
 
-    const productsConfigObj: Product[] = JSON.parse('[{"name":"TSLA","quantity":69},{"name":"ARKK","quantity":10},{"name":"ARKX","quantity":30},{"name":"GME","quantity":15},{"name":"GRAB","quantity":40},{"name":"BTC","quantity":0.181605},{"name":"ETH","quantity":3.316928},{"name":"NANO","quantity":172.28},{"name":"BCH","quantity":0.1098},{"name":"CRO","quantity":6353.3},{"name":"USDC","quantity":1000},{"name":"UST","quantity":2195.127}]') // no type check, error handling?
-    productsConfigObj.forEach(p => p.total = 0)
+    const productsConfig: Product[] = JSON.parse('[{"name":"TSLA","quantity":69},{"name":"ARKK","quantity":10},{"name":"ARKX","quantity":30},{"name":"GME","quantity":15},{"name":"GRAB","quantity":40},{"name":"BTC","quantity":0.181605},{"name":"ETH","quantity":3.316928},{"name":"NANO","quantity":172.28},{"name":"BCH","quantity":0.1098},{"name":"CRO","quantity":6353.3},{"name":"USDC","quantity":1000},{"name":"UST","quantity":2195.127}]') // no type check, error handling?
+    productsConfig.forEach(p => {
+      p.total = 0
+      p.imgsrc = `/product-logos/${p.name}.png`
+    })
 
     productStore.$patch((state) => {
-      state.products = productsConfigObj
+      state.products = productsConfig
     })
 
     const netWorth = computed(() => productStore.netWorth)
