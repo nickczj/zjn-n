@@ -60,6 +60,7 @@ export default {
       state.products = productsConfig
     })
 
+    const products = computed(() => productStore.products.sort((a, b) => b.total - a.total))
     const netWorth = computed(() => productStore.netWorth)
     const formatCurrency = computed(() => {
       return (value: number | bigint) => {
@@ -96,7 +97,7 @@ export default {
     })
 
     return {
-      products: productStore.products,
+      products,
       netWorth,
       formatCurrency,
       format2Dp
