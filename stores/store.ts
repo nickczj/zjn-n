@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { Product } from '~~/constants/networth'
+import { Product, ProductType } from '~~/constants/networth'
 import { CryptoQuote } from '~~/constants/quotes'
 import { format5Dp } from '~~/utils/utils'
 
@@ -12,6 +12,18 @@ export const useProductStore = defineStore('products', {
     }
   },
   actions: {
+    initializeStore() {
+      if (localStorage.getItem('product-store')) {
+        const productsLC = JSON.parse(localStorage.getItem('product-store'))
+        productsLC.forEach((p: Product) => {
+          if (!p.total) p.total = 0
+          if (!p.price) p.price = 0
+          p.imgsrc = `/product-logos/${p.name}.png`
+        })
+        this.products = productsLC
+        this.netWorth = productsLC.map((p: { type: ProductType; total: number }) => p.total).reduce((a: number, b: number) => a + b, 0)
+      }
+    },
     async updateTotal(cryptoQuotes: CryptoQuote[]) {
       cryptoQuotes.forEach(quote => {
         const match: Product = this.products.find((product: Product) => product.name === quote.name)
@@ -28,6 +40,9 @@ export const useProductStore = defineStore('products', {
           this.netWorth += newTotal - currentTotal
         }
       })
+    },
+    async updateProductsFromConfig(products: Product[]) {
+      this.products = products
     }
   },
 })

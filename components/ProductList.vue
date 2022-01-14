@@ -14,9 +14,9 @@
           v-for="product in products"
           :key="product.id"
         >
-          <div href="#" class="grid grid-cols-6 gap-4 block p2 max-w-lg bg-white border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
-            <div class="col-start-1 col-end-3">
-              <div class="flex items-center space-x-4">
+          <div href="#" class="grid grid-cols-6 gap-4 block p1.5 max-w-lg bg-white border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+            <div class="col-start-1 col-end-5">
+              <div class="flex items-center space-x-3">
                 <img class="w-8 h-8 rounded-full" :src="product.imgsrc" alt="">
                 <p class="text-base font-bold tracking-tight text-gray-900 dark:text-white">
                   {{ product.name }}
@@ -28,7 +28,7 @@
                 <p class="font-normal text-gray-700 dark:text-gray-400">
                   {{ formatCurrency(product.total) }}
                 </p>
-                <p class="text-xs">
+                <p v-if="product.category === 'us-equity' || product.category === 'crypto'" class="text-xs">
                   {{ formatCurrency(product.price) }} x {{ format2Dp(product.quantity) }}
                 </p>
               </div>
@@ -42,22 +42,14 @@
 
 <script lang="ts">
 import { CryptoQuote } from '~/constants/quotes'
-import { Product } from '~~/constants/networth'
 import { useProductStore } from '~~/stores/store'
 
 export default {
   name: 'ProductList',
   setup() {
     const productStore = useProductStore()
-
-    const productsConfig: Product[] = JSON.parse('[{"name":"TSLA","quantity":69},{"name":"ARKK","quantity":10},{"name":"ARKX","quantity":30},{"name":"GME","quantity":15},{"name":"GRAB","quantity":40},{"name":"BTC","quantity":0.181605},{"name":"ETH","quantity":3.316928},{"name":"NANO","quantity":172.28},{"name":"BCH","quantity":0.1098},{"name":"CRO","quantity":6353.3},{"name":"USDC","quantity":1000},{"name":"UST","quantity":2195.127}]') // no type check, error handling?
-    productsConfig.forEach(p => {
-      p.total = 0
-      p.imgsrc = `/product-logos/${p.name}.png`
-    })
-
-    productStore.$patch((state) => {
-      state.products = productsConfig
+    productStore.$subscribe((_, state) => {
+      if (state.products) localStorage.setItem('product-store', JSON.stringify(state.products))
     })
 
     const products = computed(() => productStore.products.sort((a, b) => b.total - a.total))
@@ -76,11 +68,9 @@ export default {
     const backendWsConnected = useState('ws-connected', () => false)
     const config = useRuntimeConfig()
 
-    // const { data: iexQuote, refresh } = useLazyFetch('https://cloud.iexapis.com/stable/stock/tsla/quote?token=pk_26244b01e52b42db895347905ca3448e')
-    // handle us equity pricing for closing hours -> iexQuote.isUSMarketOpen, use extendedPrice as post trading hours price
-    // handle us equity pricing for opening hours -> websocket finnhub
-
     onMounted(() => {
+      productStore.initializeStore()
+
       const backend = new WebSocket(config.WS_URL)
       backend.onopen = () => backendWsConnected.value = true
       backend.onclose = () => backendWsConnected.value = false
@@ -93,7 +83,6 @@ export default {
           console.log('Error parsing backend websocket message', e)
         }
       }
-      // refresh()
     })
 
     return {
