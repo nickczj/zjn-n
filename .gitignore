@@ -6,3 +6,4 @@ wp-dist
 .output
 .idea
 .env
+.conf

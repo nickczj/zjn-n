@@ -10,6 +10,9 @@ export default defineNuxtConfig({
   modules: [
     'nuxt-socket-io',
   ],
+  meta: {
+    link: [{ rel: 'icon', href: 'favicon.ico' }]
+  },
   css: [
     '@unocss/reset/tailwind.css',
     '~/styles/main.css',
