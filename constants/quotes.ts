@@ -1,6 +1,6 @@
-export interface CryptoQuote {
+export interface Quote {
   name: string
-  usdValue: number
-  sgdValue: number
-  usdToSgd: number
+  value: number
+  source: string
+  updatedOn: string
 }
