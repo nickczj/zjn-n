@@ -32,4 +32,8 @@ export default defineNuxtConfig({
       scale: 1.2,
     },
   },
+  publicRuntimeConfig: {
+    WS_URL: process.env.WS_URL,
+    QUOTES_API:process.env.QUOTES_API,
+  },
 })
