@@ -85,7 +85,7 @@ export default {
     onMounted(() => {
       productStore.initializeStore()
 
-      fetch('http://localhost:8080/quotes')
+      fetch(config.QUOTES_API)
         .then(result => {
           result.json().then(quotes => {
             // eslint-disable-next-line no-console
