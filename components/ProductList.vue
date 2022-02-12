@@ -1,39 +1,36 @@
 <template>
   <div>
     <div text-xl font-bold font-300 cursor-default>
-      <p>
-        Investments
-      </p>
-      <p>
-        {{ formatCurrency(usdToSgd(netWorth)) }}
-      </p>
+      <p>Investments</p>
+      <p>{{ formatCurrency(usdToSgd(netWorth)) }}</p>
     </div>
-    <div v-if="products.length !== 0" id="investments" class="flex justify-center p6">
-      <div>
+    <div>
+      <div v-if="products.length !== 0" id="investments" class="p6">
         <div
           v-for="product in products"
           :key="product.id"
+          class="flex justify-center"
         >
-          <div href="#" class="grid grid-cols-6 gap-4 block p1.5 max-w-lg bg-white border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
-            <div class="col-start-1 col-end-5">
-              <div class="flex items-center space-x-3">
-                <img class="w-8 h-8 rounded-full" :src="product.imgsrc" alt="">
-                <p class="text-base font-bold tracking-tight text-gray-900 dark:text-white">
-                  {{ product.name }}
-                </p>
-              </div>
+          <div href="#" class="grid grid-cols-7 gap-4 p1.5 w-full w-full lg:w-2/3 bg-white border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+            <div class="col-span-3 flex items-center space-x-3">
+              <img class="w-8 h-8 rounded-full" :src="product.imgsrc" alt="">
+              <p class="text-base font-bold tracking-tight text-gray-900 dark:text-white">
+                {{ product.name }}
+              </p>
             </div>
-            <div class="col-start-5 col-end-7">
-              <div class="space-y-0.5">
-                <p v-if="product.category === 'us-equity' || product.category === 'crypto'" class="font-normal text-gray-700 dark:text-gray-400">
+            <div class="col-span-1"></div>
+            <div class="col-span-3 flex justify-end items-center">
+              <div v-if="product.category === 'us-equity' || product.category === 'crypto'" class="space-y-0.5 text-center">
+                <p class="font-normal text-gray-700 dark:text-gray-400">
                   {{ formatCurrency(usdToSgd(product.total)) }}
                 </p>
-                <p v-if="product.category === 'cpf'" class="font-normal text-gray-700 dark:text-gray-400">
-                  {{ formatCurrency(product.total) }}
-                </p>
-
-                <p v-if="product.category === 'us-equity' || product.category === 'crypto'" class="text-xs">
+                <p class="text-xs">
                   {{ formatCurrency(usdToSgd(product.price)) }} x {{ format2Dp(product.quantity) }}
+                </p>
+              </div>
+              <div v-if="product.category === 'cpf'">
+                <p class="font-normal text-gray-700 dark:text-gray-400">
+                  {{ formatCurrency(product.total) }}
                 </p>
               </div>
             </div>
@@ -89,7 +86,7 @@ export default {
         .then(result => {
           result.json().then(quotes => {
             // eslint-disable-next-line no-console
-            console.log(quotes)
+            // console.log(quotes)
             quotes.forEach((quote: Quote) => {
               productStore.updateTotal(quote)
             })
@@ -106,7 +103,7 @@ export default {
         try {
           const quote: Quote = JSON.parse(message.data)
           // eslint-disable-next-line no-console
-          console.log(quote)
+          // console.log(quote)
           productStore.updateTotal(quote)
         } catch (e) {
           // eslint-disable-next-line no-console

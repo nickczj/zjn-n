@@ -10,8 +10,13 @@ export default defineNuxtConfig({
   modules: [
     'nuxt-socket-io',
   ],
-  meta: {
-    link: [{ rel: 'icon', href: 'favicon.ico' }]
+  meta: [
+    { link: [{ rel: 'icon', href: 'favicon.ico' }] },
+  ],
+  head: {
+    meta: [
+      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+    ]
   },
   css: [
     '@unocss/reset/tailwind.css',
@@ -34,6 +39,6 @@ export default defineNuxtConfig({
   },
   publicRuntimeConfig: {
     WS_URL: process.env.WS_URL,
-    QUOTES_API:process.env.QUOTES_API,
+    QUOTES_API: process.env.QUOTES_API,
   },
 })
