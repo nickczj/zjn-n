@@ -6,17 +6,17 @@
     "start": "node .output/server/index.mjs"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^0.10.0",
+    "@antfu/eslint-config": "^0.14.2",
     "@iconify/json": "^1.1.431",
     "@nuxt/bridge-edge": "latest",
     "@nuxt/kit-edge": "latest",
-    "@unocss/nuxt": "^0.11.1",
+    "@unocss/nuxt": "^0.20.1",
     "@vue/runtime-dom": "^3.2.22",
     "@vueuse/core": "^6.9.1",
-    "eslint": "^8.2.0",
+    "eslint": "^8.5.0",
     "nuxi-edge": "latest",
     "nuxt-edge": "latest",
-    "typescript": "4.4.4"
+    "typescript": "^4.5.4"
   },
   "pnpm": {
     "overrides": {
