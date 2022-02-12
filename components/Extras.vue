@@ -6,6 +6,9 @@ const productStore = useProductStore()
 const showSettings = useState('settings', () => false)
 const connected = useState('ws-connected', () => false)
 
+const realtimeUpdateEnabled = computed(() => productStore.realtimeUpdateEnabled)
+const toggleRealtimeUpdates = () => productStore.toggleRealtimeUpdates()
+
 const productText = ref('')
 const unwatch = watch(toRef(productStore, 'products'), async(_a, _b) => {
   productText.value = JSON.stringify(productStore.products, null, 2)
@@ -23,6 +26,12 @@ const onSubmit = () => productStore.updateProductsFromConfig(JSON.parse(productT
     <p class="text-xs">
       WS Connected: {{ connected }}
     </p>
+
+    <form @submit.prevent="toggleRealtimeUpdates">
+      <button class="button px-6 py-2 bg-blue-500 font-medium text-sm hover:bg-blue-600 text-blue-100 rounded">
+        {{ realtimeUpdateEnabled ? 'Stop updates' : 'Start updates' }}
+      </button>
+    </form>
 
     <br>
 

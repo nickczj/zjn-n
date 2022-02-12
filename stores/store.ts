@@ -10,6 +10,7 @@ export const useProductStore = defineStore('products', {
       netWorth: 0,
       currencies: [] as Quote[],
       logs: [] as string[],
+      realtimeUpdateEnabled: undefined as boolean
     }
   },
   actions: {
@@ -23,6 +24,10 @@ export const useProductStore = defineStore('products', {
         })
         this.products = productsLC
         this.netWorth = productsLC.map((p: { type: ProductType; total: number }) => p.total).reduce((a: number, b: number) => a + b, 0)
+      }
+
+      if (!localStorage.getItem('realtime-update-enabled')) {
+        localStorage.setItem('realtime-update-enabled', 'true')
       }
     },
     async updateTotal(quote: Quote) {
@@ -52,6 +57,12 @@ export const useProductStore = defineStore('products', {
     },
     async updateProductsFromConfig(products: Product[]) {
       this.products = products
+    },
+    async toggleRealtimeUpdates() {
+      console.log(localStorage.getItem('realtime-update-enabled'))
+      const x = !(localStorage.getItem('realtime-update-enabled') === 'true')
+      this.realtimeUpdateEnabled = x
+      localStorage.setItem('realtime-update-enabled', x.toString())
     }
   },
 })
