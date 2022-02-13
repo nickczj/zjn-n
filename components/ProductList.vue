@@ -11,7 +11,7 @@
           :key="product.id"
           class="flex justify-center"
         >
-          <div href="#" class="grid grid-cols-7 gap-4 p1.5 w-full w-full lg:w-2/3 bg-white border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+          <div href="#" class="grid grid-cols-7 gap-4 p1.5 w-full w-full md:w-1/2 lg:w-1/2 bg-white border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
             <div class="col-span-3 flex items-center space-x-3">
               <img class="w-6 h-6 lg:w-8 lg:h-8 rounded-full" :src="product.imgsrc" alt="">
               <p class="text-sm md:text-base lg:text-base font-bold tracking-tight text-gray-900 dark:text-white">
@@ -49,6 +49,8 @@ export default {
   name: 'ProductList',
   setup() {
     const productStore = useProductStore()
+    const config = useRuntimeConfig()
+
     productStore.$subscribe((_, state) => {
       if (state.products) localStorage.setItem('product-store', JSON.stringify(state.products))
     })
@@ -76,12 +78,8 @@ export default {
       }
     })
 
-    const backendWsConnected = useState('ws-connected', () => false)
-    const config = useRuntimeConfig()
-
     onMounted(() => {
-      productStore.initializeStore()
-
+      productStore.initializeStore(config.WS_URL)
       fetch(config.QUOTES_API)
         .then(result => {
           result.json().then(quotes => {
@@ -95,23 +93,6 @@ export default {
             console.log('Error parsing backend websocket message', e)
           })
         })
-
-      const backend = new WebSocket(config.WS_URL)
-      backend.onopen = () => backendWsConnected.value = true
-      backend.onclose = () => backendWsConnected.value = false
-      backend.onmessage = (message) => {
-        if (productStore.realtimeUpdateEnabled) {
-          try {
-            const quote: Quote = JSON.parse(message.data)
-            // eslint-disable-next-line no-console
-            // console.log(quote)
-            productStore.updateTotal(quote)
-          } catch (e) {
-            // eslint-disable-next-line no-console
-            console.log('Error parsing backend websocket message', e)
-          }
-        }
-      }
     })
 
     return {

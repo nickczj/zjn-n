@@ -1,13 +1,13 @@
 <script setup lang='ts'>
 import { useProductStore } from '~~/stores/store'
 
+const config = useRuntimeConfig()
 const productStore = useProductStore()
 
 const showSettings = useState('settings', () => false)
-const connected = useState('ws-connected', () => false)
 
-const realtimeUpdateEnabled = computed(() => productStore.realtimeUpdateEnabled)
-const toggleRealtimeUpdates = () => productStore.toggleRealtimeUpdates()
+const realtimeUpdateEnabled = computed(() => productStore.backendWsConnected)
+const toggleRealtimeUpdates = () => productStore.toggleRealtimeUpdates(config.WS_URL)
 
 const productText = ref('')
 const unwatch = watch(toRef(productStore, 'products'), async(_a, _b) => {
@@ -24,7 +24,7 @@ const onSubmit = () => productStore.updateProductsFromConfig(JSON.parse(productT
 <template>
   <div v-if="showSettings">
     <p class="text-xs">
-      WS Connected: {{ connected }}
+      WS Connected: {{ realtimeUpdateEnabled }}
     </p>
 
     <form @submit.prevent="toggleRealtimeUpdates">
@@ -37,7 +37,7 @@ const onSubmit = () => productStore.updateProductsFromConfig(JSON.parse(productT
 
     <form @submit.prevent="onSubmit">
       <div>
-        <textarea v-model="productText" cols="50" rows="20" class="text-xs text-dark-800"></textarea>
+        <textarea v-model="productText" cols="50" rows="20" class="text-xs text-dark-800" />
       </div>
       <div>
         <button class="button px-6 py-2 bg-blue-500 font-medium text-sm hover:bg-blue-600 text-blue-100 rounded">

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import { Product, ProductType } from '~~/constants/networth'
-import { Quote } from '~~/constants/quotes'
+import type { Product, ProductType } from '~~/constants/networth'
+import type { Quote } from '~~/constants/quotes'
 import { format5Dp } from '~~/utils/utils'
 
 export const useProductStore = defineStore('products', {
@@ -10,11 +10,12 @@ export const useProductStore = defineStore('products', {
       netWorth: 0,
       currencies: [] as Quote[],
       logs: [] as string[],
-      realtimeUpdateEnabled: undefined as boolean
+      backendWs: undefined as WebSocket,
+      backendWsConnected: false as boolean
     }
   },
   actions: {
-    initializeStore() {
+    initializeStore(wsUrl: string) {
       if (localStorage.getItem('product-store')) {
         const productsLC = JSON.parse(localStorage.getItem('product-store'))
         productsLC.forEach((p: Product) => {
@@ -26,9 +27,28 @@ export const useProductStore = defineStore('products', {
         this.netWorth = productsLC.map((p: { type: ProductType; total: number }) => p.total).reduce((a: number, b: number) => a + b, 0)
       }
 
-      if (!localStorage.getItem('realtime-update-enabled')) {
-        localStorage.setItem('realtime-update-enabled', 'true')
+      if (!localStorage.getItem('realtime-update-enabled')) localStorage.setItem('realtime-update-enabled', 'true')
+      if (localStorage.getItem('realtime-update-enabled')) this.openWs(wsUrl)
+    },
+    async openWs(wsUrl: string) {
+      this.backendWs = new WebSocket(wsUrl)
+
+      this.backendWs.onopen = () => this.backendWsConnected = true
+      this.backendWs.onclose = () => this.backendWsConnected = false
+      this.backendWs.onmessage = (message) => {
+        try {
+          const quote: Quote = JSON.parse(message.data)
+          // eslint-disable-next-line no-console
+          // console.log(quote)
+          this.updateTotal(quote)
+        } catch (e) {
+          // eslint-disable-next-line no-console
+          console.log('Error parsing backend websocket message', e)
+        }
       }
+    },
+    async closeWs() {
+      this.backendWs.close()
     },
     async updateTotal(quote: Quote) {
       if (quote.source === 'fx') {
@@ -58,11 +78,11 @@ export const useProductStore = defineStore('products', {
     async updateProductsFromConfig(products: Product[]) {
       this.products = products
     },
-    async toggleRealtimeUpdates() {
-      console.log(localStorage.getItem('realtime-update-enabled'))
-      const x = !(localStorage.getItem('realtime-update-enabled') === 'true')
-      this.realtimeUpdateEnabled = x
-      localStorage.setItem('realtime-update-enabled', x.toString())
+    async toggleRealtimeUpdates(wsUrl: string) {
+      const realtimeUpdateEnabled = !(localStorage.getItem('realtime-update-enabled') === 'true')
+      localStorage.setItem('realtime-update-enabled', realtimeUpdateEnabled.toString())
+      if (realtimeUpdateEnabled) this.closeWs()
+      else this.openWs(wsUrl)
     }
   },
 })
