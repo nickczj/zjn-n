@@ -18,7 +18,7 @@
                 {{ product.name }}
               </p>
             </div>
-            <div class="col-span-1"></div>
+            <div class="col-span-1" />
             <div class="col-span-3 flex justify-end items-center">
               <div v-if="product.category === 'us-equity' || product.category === 'crypto'" class="space-y-0.5 text-center">
                 <p class="text-sm md:text-base lg:text-base font-normal text-gray-700 dark:text-gray-400">
@@ -41,67 +41,52 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Quote } from '~/constants/quotes'
+<script setup lang="ts">
+import type { Quote } from '~/constants/quotes'
 import { useProductStore } from '~~/stores/store'
 
-export default {
-  name: 'ProductList',
-  setup() {
-    const productStore = useProductStore()
-    const config = useRuntimeConfig()
+const productStore = useProductStore()
+const config = useRuntimeConfig()
 
-    productStore.$subscribe((_, state) => {
-      if (state.products) localStorage.setItem('product-store', JSON.stringify(state.products))
-    })
+productStore.$subscribe((_, state) => {
+  if (state.products) localStorage.setItem('product-store', JSON.stringify(state.products))
+})
 
-    const products = computed(() => productStore.products.sort((a, b) => b.total - a.total))
-    const netWorth = computed(() => productStore.netWorth)
-    const formatCurrency = computed(() => {
-      return (value: number | bigint) => {
-        return new Intl.NumberFormat('eb-SG', { style: 'currency', currency: 'SGD' }).format(value)
-      }
-    })
-    const usdToSgd = computed(() => {
-      return (value: number) => {
-        const sgdQuote = productStore.currencies.find(currency => currency.name === 'SGD')
-        if (sgdQuote && sgdQuote.value) {
-          return value / sgdQuote.value
-        } else {
-          return 0
-        }
-      }
-    })
-    const format2Dp = computed(() => {
-      return (value: number | undefined) => {
-        if (value) return value.toFixed(2)
-      }
-    })
-
-    onMounted(() => {
-      productStore.initializeStore(config.WS_URL)
-      fetch(config.QUOTES_API)
-        .then(result => {
-          result.json().then(quotes => {
-            // eslint-disable-next-line no-console
-            // console.log(quotes)
-            quotes.forEach((quote: Quote) => {
-              productStore.updateTotal(quote)
-            })
-          }).catch(e => {
-            // eslint-disable-next-line no-console
-            console.log('Error parsing backend websocket message', e)
-          })
-        })
-    })
-
-    return {
-      products,
-      netWorth,
-      formatCurrency,
-      usdToSgd,
-      format2Dp
+const products = computed(() => productStore.products.sort((a, b) => b.total - a.total))
+const netWorth = computed(() => productStore.netWorth)
+const formatCurrency = computed(() => {
+  return (value: number | bigint) => {
+    return new Intl.NumberFormat('eb-SG', { style: 'currency', currency: 'SGD' }).format(value)
+  }
+})
+const usdToSgd = computed(() => {
+  return (value: number) => {
+    const sgdQuote = productStore.currencies.find(currency => currency.name === 'SGD')
+    if (sgdQuote && sgdQuote.value) {
+      return value / sgdQuote.value
+    } else {
+      return 0
     }
-  },
-}
+  }
+})
+const format2Dp = computed(() => {
+  return (value: number | undefined) => {
+    if (value) return value.toFixed(2)
+  }
+})
+
+onMounted(() => {
+  productStore.initializeStore(config.WS_URL)
+  fetch(config.QUOTES_API)
+    .then(result => {
+      result.json().then(quotes => {
+        quotes.forEach((quote: Quote) => {
+          productStore.updateTotal(quote)
+        })
+      }).catch(e => {
+        // eslint-disable-next-line no-console
+        console.log('Error parsing backend websocket message', e)
+      })
+    })
+})
 </script>
