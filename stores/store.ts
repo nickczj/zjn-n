@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { Product, ProductType } from '~~/constants/networth'
+import type { Preferences, Product, ProductType } from '~~/constants/networth'
 import type { Quote } from '~~/constants/quotes'
 import { format5Dp } from '~~/utils/utils'
 
@@ -11,8 +11,23 @@ export const useProductStore = defineStore('products', {
       currencies: [] as Quote[],
       logs: [] as string[],
       backendWs: undefined as WebSocket,
-      backendWsConnected: false as boolean
+      backendWsConnected: false as boolean,
+      preferences: undefined as Preferences | undefined
     }
+  },
+  getters: {
+    netWorthCurrency() {
+      if (this.preferences && this.preferences.netWorthCurrency) return this.preferences.netWorthCurrency
+      else return 'USD'
+    },
+    stocksCurrency() {
+      if (this.preferences && this.preferences.stocksCurrency) return this.preferences.stocksCurrency
+      else return 'USD'
+    },
+    cpfCurrency() {
+      if (this.preferences && this.preferences.cpfCurrency) return this.preferences.cpfCurrency
+      else return 'SGD'
+    },
   },
   actions: {
     initializeStore(wsUrl: string) {
@@ -29,6 +44,16 @@ export const useProductStore = defineStore('products', {
 
       if (!localStorage.getItem('realtime-update-enabled')) localStorage.setItem('realtime-update-enabled', 'true')
       if (localStorage.getItem('realtime-update-enabled')) this.openWs(wsUrl)
+
+      if (localStorage.getItem('preferences')) this.preferences = JSON.parse(localStorage.getItem('preferences'))
+      if (!localStorage.getItem('preferences')) {
+        this.preferences = <Preferences>({
+          netWorthCurrency: 'USD',
+          stocksCurrency: 'USD',
+          cpfCurrency: 'SGD'
+        })
+        localStorage.setItem('preferences', JSON.stringify(this.preferences))
+      }
     },
     async openWs(wsUrl: string) {
       this.backendWs = new WebSocket(wsUrl)
@@ -79,10 +104,16 @@ export const useProductStore = defineStore('products', {
       this.products = products
     },
     async toggleRealtimeUpdates(wsUrl: string) {
-      const realtimeUpdateEnabled = !(localStorage.getItem('realtime-update-enabled') === 'true')
-      localStorage.setItem('realtime-update-enabled', realtimeUpdateEnabled.toString())
+      const realtimeUpdateEnabled = localStorage.getItem('realtime-update-enabled') === 'true'
+      localStorage.setItem('realtime-update-enabled', (!realtimeUpdateEnabled).toString())
       if (realtimeUpdateEnabled) this.closeWs()
       else this.openWs(wsUrl)
+    },
+    async updatePreference(preference: string, value: string) {
+      if (this.preferences) {
+        this.preferences[preference] = value
+        localStorage.setItem('preferences', JSON.stringify(this.preferences))
+      }
     }
   },
 })

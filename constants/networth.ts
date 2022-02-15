@@ -47,3 +47,9 @@ export interface NetWorth {
   liabilities: Liabilities
   breakdown: Breakdown
 }
+
+export interface Preferences {
+  netWorthCurrency: string
+  stocksCurrency: string
+  cpfCurrency: string
+}
