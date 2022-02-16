@@ -10,7 +10,7 @@
         :key="product.id"
         class="flex justify-center"
       >
-        <div href="#" class="grid grid-cols-7 gap-4 p1.5 w-full w-full md:w-1/2 lg:w-1/2 bg-white border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+        <div href="#" class="grid grid-cols-7 gap-4 p1.5 w-full w-full md:w-1/2 lg:w-1/2 bg-white border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-dark-800 dark:border-gray-700 dark:hover:bg-dark-500">
           <div class="col-span-3 flex items-center space-x-3">
             <img class="w-6 h-6 lg:w-8 lg:h-8 rounded-full" :src="product.imgsrc" alt="">
             <p class="text-sm md:text-base lg:text-base font-bold tracking-tight text-gray-900 dark:text-white">
